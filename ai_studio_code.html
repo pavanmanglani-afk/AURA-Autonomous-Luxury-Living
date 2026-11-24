@@ -1,0 +1,1147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AURA — Autonomous Luxury Living</title>
+  <meta name="description" content="Immersive 3D architectural showcase of next-generation luxury smart estates. Featuring generative ambient lighting, automated climate zoning, smart electrochromic glass, and neural security." />
+  <meta property="og:title" content="AURA — Autonomous Luxury Living" />
+  <meta property="og:description" content="Immersive 3D architectural showcase of next-generation luxury smart estates with photorealistic 3D controls and cinematic lighting." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --color-gold-300: #f3e5b8;
+      --color-gold-400: #dfbe76;
+      --color-gold-500: #c5a059;
+      --color-gold-600: #9e7d3b;
+      --color-obsidian: #07070a;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: #07070a;
+      color: #ede9e0;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+      margin: 0;
+    }
+    ::selection { background: #c5a059; color: #07070a; }
+    h1, h2, h3, .font-display {
+      font-family: 'Cinzel', Georgia, serif;
+      letter-spacing: 0.04em;
+    }
+    .font-tech { font-family: 'Space Grotesk', monospace; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #09090c; }
+    ::-webkit-scrollbar-thumb { background: #2a2824; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #c5a059; }
+    .luxury-glass {
+      background: rgba(14, 14, 18, 0.92);
+      border: 1px solid rgba(197, 160, 89, 0.25);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #ffffff 0%, #faecd0 30%, #dfbe76 70%, #9e7d3b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    input[type="range"] {
+      accent-color: #c5a059;
+    }
+  </style>
+</head>
+<body class="bg-[#07070a] text-[#ede9e0] relative">
+
+  <!-- NAVBAR -->
+  <header class="fixed top-0 left-0 right-0 z-40 px-4 md:px-8 py-4 transition-all duration-300">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <a href="#hero-stage" class="flex items-center gap-3 cursor-pointer">
+        <div class="w-10 h-10 rounded-sm border border-[#c5a059]/40 bg-[#0e0e12]/90 flex items-center justify-center">
+          <span class="font-display text-[#c5a059] font-bold text-lg tracking-wider">A</span>
+        </div>
+        <div>
+          <div class="font-display text-base md:text-lg font-semibold tracking-[0.2em] text-[#f5f2eb]">AURA</div>
+          <div class="text-[9px] uppercase tracking-[0.25em] text-[#c5a059]/80 font-tech">Autonomous Living</div>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-8 text-xs uppercase tracking-[0.18em] text-[#a8a39d]">
+        <a href="#hero-stage" class="hover:text-[#c5a059] transition-colors py-1">3D Residence</a>
+        <a href="#intelligence-systems" class="hover:text-[#c5a059] transition-colors py-1">Intelligence</a>
+        <a href="#finishes-studio" class="hover:text-[#c5a059] transition-colors py-1">Finishes Studio</a>
+        <a href="#spatial-specs" class="hover:text-[#c5a059] transition-colors py-1">Specifications</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <button id="btn-solar-toggle" title="Toggle Solar Hour" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-[#121218]/90 text-xs font-tech text-[#dcd7cb] hover:border-[#c5a059]/50 transition-colors cursor-pointer">
+          <span id="solar-icon" class="text-[#dfbe76]">☀</span>
+          <span id="nav-time-label">18:30</span>
+          <span id="nav-temp-label" class="text-[10px] text-[#888]">• 72°F</span>
+        </button>
+
+        <button id="btn-audio-toggle" title="Toggle Spatial Audio" class="w-9 h-9 rounded-full border border-white/10 bg-[#121218]/90 flex items-center justify-center text-[#777] hover:border-[#c5a059]/60 hover:bg-[#1a1a24] transition-all cursor-pointer">
+          <svg id="icon-audio-off" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+          <svg id="icon-audio-on" class="w-4 h-4 hidden text-[#c5a059]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        </button>
+
+        <button id="btn-open-vip" class="relative group overflow-hidden px-4 md:px-5 py-2 rounded-sm border border-[#c5a059]/50 bg-gradient-to-r from-[#1c1913] to-[#262117] text-[#f5f2eb] text-xs font-semibold uppercase tracking-[0.15em] hover:border-[#c5a059] hover:text-[#dfbe76] transition-all cursor-pointer">
+          <span class="relative z-10 flex items-center gap-2">
+            <span class="text-[#c5a059]">✦</span>
+            <span class="hidden sm:inline">Private</span> Consultation
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO 3D STAGE -->
+  <section id="hero-stage" class="relative w-full h-screen overflow-hidden select-none bg-[#07070a]">
+    <div id="three-mount" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
+
+    <!-- Floating 3D Hotspots Layer -->
+    <div id="hotspots-layer" class="absolute inset-0 pointer-events-none z-20"></div>
+
+    <!-- Top Camera Perspective Pills -->
+    <div id="camera-pills" class="absolute top-20 left-1/2 -translate-x-1/2 z-20 hidden md:flex items-center gap-1.5 p-1 rounded-full border border-white/10 bg-[#0c0c12]/85 shadow-lg">
+      <button data-view="exterior" class="cam-pill px-3.5 py-1.5 rounded-full text-xs font-tech tracking-wider uppercase transition-all cursor-pointer bg-[#c5a059] text-[#0a0a0d] font-semibold">Exterior 3/4</button>
+      <button data-view="living" class="cam-pill px-3.5 py-1.5 rounded-full text-xs font-tech tracking-wider uppercase transition-all cursor-pointer text-[#9c978f] hover:text-[#f5f2eb]">Living Pavilion</button>
+      <button data-view="pool" class="cam-pill px-3.5 py-1.5 rounded-full text-xs font-tech tracking-wider uppercase transition-all cursor-pointer text-[#9c978f] hover:text-[#f5f2eb]">Pool & Lounge</button>
+      <button data-view="penthouse" class="cam-pill px-3.5 py-1.5 rounded-full text-xs font-tech tracking-wider uppercase transition-all cursor-pointer text-[#9c978f] hover:text-[#f5f2eb]">Master Suite</button>
+      <button data-view="security" class="cam-pill px-3.5 py-1.5 rounded-full text-xs font-tech tracking-wider uppercase transition-all cursor-pointer text-[#9c978f] hover:text-[#f5f2eb]">Perimeter Gate</button>
+    </div>
+
+    <!-- Hero Title Badge (Top-Left) -->
+    <div id="hero-badge" class="absolute top-24 left-6 sm:left-10 z-20 pointer-events-none max-w-sm">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="w-2 h-2 rounded-full bg-[#c5a059]"></span>
+        <span class="text-[10px] font-tech uppercase tracking-[0.25em] text-[#c5a059]">ESTATE SPECIFICATION 01</span>
+      </div>
+      <h1 class="font-display text-2xl sm:text-3xl md:text-4xl text-[#fdfbf7] font-medium leading-tight">
+        Autonomous <br /><span class="gold-gradient-text">Luxury Living</span>
+      </h1>
+      <p class="mt-2 text-xs text-[#a8a39d] leading-relaxed hidden sm:block">
+        Kinetic architecture integrated with real-time biological lighting, micro-climate zoning, and quantum perimeter security.
+      </p>
+    </div>
+
+    <!-- Orbit Hint -->
+    <div class="absolute bottom-6 left-6 z-10 pointer-events-none hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-sm border border-white/5 bg-[#09090d]/70 text-[10px] text-[#8e8a83] font-tech uppercase tracking-widest">
+      <span>◎ Interactive 3D Stage • Drag to Orbit • Scroll to Zoom</span>
+    </div>
+
+    <!-- Scroll Guide -->
+    <a href="#architectural-narrative" class="absolute bottom-6 right-6 z-20 hidden md:flex items-center gap-2 text-[11px] font-tech uppercase tracking-widest text-[#a8a39d] hover:text-[#c5a059] transition-colors">
+      <span>Explore Architecture</span>
+      <span class="text-[#c5a059]">↓</span>
+    </a>
+
+    <!-- COLLAPSIBLE BOTTOM CONTROL DOCK -->
+    <div id="control-dock-wrapper" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-full max-w-[940px] px-3 sm:px-4 transition-transform duration-500 ease-out">
+      <div class="flex justify-center mb-1">
+        <button id="btn-collapse-dock" class="flex items-center gap-1.5 px-4 py-1.5 rounded-t-lg bg-[#0e0e14]/95 border-t border-x border-[#c5a059]/30 text-[11px] font-tech uppercase tracking-widest text-[#dfbe76] hover:bg-[#181822] hover:text-[#f5f2eb] transition-all cursor-pointer shadow-md">
+          <span id="dock-collapse-label">▾ Cinema View / Hide Controls</span>
+        </button>
+      </div>
+
+      <div class="rounded-xl luxury-glass overflow-hidden">
+        <!-- Tabs -->
+        <div class="flex items-center justify-between border-b border-white/10 px-2 sm:px-4 py-2 bg-[#0a0a0e]/70 overflow-x-auto">
+          <div class="flex items-center gap-1 sm:gap-2">
+            <button data-tab="lighting" class="dock-tab px-3 sm:px-4 py-2 rounded-lg text-[11px] font-tech uppercase tracking-wider cursor-pointer bg-[#c5a059]/20 text-[#dfbe76] border border-[#c5a059]/50 font-semibold whitespace-nowrap">☀ Illumination</button>
+            <button data-tab="curtains" class="dock-tab px-3 sm:px-4 py-2 rounded-lg text-[11px] font-tech uppercase tracking-wider cursor-pointer text-[#9c978f] hover:text-[#ede9e0] border border-transparent whitespace-nowrap">◫ Curtains & Glass</button>
+            <button data-tab="climate" class="dock-tab px-3 sm:px-4 py-2 rounded-lg text-[11px] font-tech uppercase tracking-wider cursor-pointer text-[#9c978f] hover:text-[#ede9e0] border border-transparent whitespace-nowrap">≋ Climate & Air</button>
+            <button data-tab="security" class="dock-tab px-3 sm:px-4 py-2 rounded-lg text-[11px] font-tech uppercase tracking-wider cursor-pointer text-[#9c978f] hover:text-[#ede9e0] border border-transparent whitespace-nowrap">◈ Shield & Security</button>
+            <button data-tab="atmosphere" class="dock-tab px-3 sm:px-4 py-2 rounded-lg text-[11px] font-tech uppercase tracking-wider cursor-pointer text-[#9c978f] hover:text-[#ede9e0] border border-transparent whitespace-nowrap">◷ Solar Chrono</button>
+          </div>
+          <div class="hidden md:flex items-center text-[10px] font-tech text-[#c5a059] pr-2">● AUTONOMOUS AI NODE 01</div>
+        </div>
+
+        <!-- Tab Panels -->
+        <div class="p-4 sm:p-5">
+          <!-- Panel 1: Lighting -->
+          <div id="panel-lighting" class="dock-panel grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+            <div class="md:col-span-5 space-y-2">
+              <div class="text-[10px] uppercase font-tech tracking-widest text-[#a8a39d]">Circadian Light Spectrum</div>
+              <div class="grid grid-cols-2 gap-2">
+                <button data-preset="sunset" class="light-preset-btn flex flex-col text-left px-3 py-2 rounded-md border border-[#c5a059] bg-[#c5a059]/15 text-[#f5f2eb] cursor-pointer"><span class="text-xs font-semibold">Sunset Glow</span><span class="text-[10px] text-[#c5a059]/80 font-tech">2200K</span></button>
+                <button data-preset="daylight" class="light-preset-btn flex flex-col text-left px-3 py-2 rounded-md border border-white/10 bg-[#121218]/60 text-[#a8a39d] cursor-pointer"><span class="text-xs font-semibold">Crisp Day</span><span class="text-[10px] text-[#c5a059]/80 font-tech">5000K</span></button>
+                <button data-preset="nocturne" class="light-preset-btn flex flex-col text-left px-3 py-2 rounded-md border border-white/10 bg-[#121218]/60 text-[#a8a39d] cursor-pointer"><span class="text-xs font-semibold">Nocturne Blue</span><span class="text-[10px] text-[#c5a059]/80 font-tech">6500K</span></button>
+                <button data-preset="candlelight" class="light-preset-btn flex flex-col text-left px-3 py-2 rounded-md border border-white/10 bg-[#121218]/60 text-[#a8a39d] cursor-pointer"><span class="text-xs font-semibold">Candlelight</span><span class="text-[10px] text-[#c5a059]/80 font-tech">1800K</span></button>
+              </div>
+            </div>
+            <div class="md:col-span-7 space-y-4">
+              <div>
+                <div class="flex justify-between text-xs font-tech mb-1.5">
+                  <span class="text-[#a8a39d]">Interior Lighting Dimmer</span>
+                  <span id="val-dimmer" class="text-[#dfbe76] font-semibold">90%</span>
+                </div>
+                <input id="input-dimmer" type="range" min="0" max="1" step="0.05" value="0.9" class="w-full bg-[#1a1a24] h-1.5 rounded-lg cursor-pointer" />
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <button id="btn-facade-lights" class="flex items-center gap-2 px-3 py-1.5 rounded-md border border-[#c5a059] bg-[#c5a059]/15 text-[#f5f2eb] text-xs font-tech cursor-pointer">
+                  <span>Facade Uplights</span><span id="lbl-facade" class="text-[10px]">ON</span>
+                </button>
+                <button id="btn-pool-lights" class="flex items-center gap-2 px-3 py-1.5 rounded-md border border-[#22d4ff]/60 bg-[#22d4ff]/10 text-[#88e8ff] text-xs font-tech cursor-pointer">
+                  <span>Pool Underglow</span><span id="lbl-pool" class="text-[10px]">ON</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 2: Curtains & Glass -->
+          <div id="panel-curtains" class="dock-panel hidden grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+            <div class="md:col-span-5 space-y-2">
+              <div class="flex justify-between text-xs font-tech">
+                <span class="text-[#a8a39d]">Motorized Acoustic Drapery</span>
+                <span id="val-curtain" class="text-[#dfbe76]">70% Open</span>
+              </div>
+              <input id="input-curtain" type="range" min="0" max="1" step="0.05" value="0.7" class="w-full bg-[#1a1a24] h-1.5 rounded-lg cursor-pointer" />
+              <div class="flex justify-between text-[10px] text-[#777] font-tech"><span>Full Seclusion</span><span>Panoramic Vista</span></div>
+            </div>
+            <div class="md:col-span-7 flex flex-wrap gap-4 items-center">
+              <div class="space-y-1.5 flex-1 min-w-[200px]">
+                <div class="text-[10px] uppercase font-tech tracking-widest text-[#a8a39d]">Electrochromic Smart Glazing</div>
+                <button id="btn-privacy-glass" class="w-full flex items-center justify-between px-3.5 py-2 rounded-md border border-white/10 bg-[#121218]/60 text-[#a8a39d] text-xs font-tech cursor-pointer">
+                  <span id="lbl-glass-state">Ultra-Clear Optical</span>
+                  <span id="lbl-glass-metric" class="text-[10px] text-[#c5a059]">92% TRANSMISSIVE</span>
+                </button>
+              </div>
+              <div class="space-y-1.5 flex-1 min-w-[180px]">
+                <div class="flex justify-between text-xs font-tech">
+                  <span class="text-[#a8a39d]">Sun Louver Tilt</span>
+                  <span id="val-louver" class="text-[#dfbe76]">25°</span>
+                </div>
+                <input id="input-louver" type="range" min="0" max="90" step="5" value="25" class="w-full bg-[#1a1a24] h-1.5 rounded-lg cursor-pointer" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 3: Climate & Air -->
+          <div id="panel-climate" class="dock-panel hidden grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+            <div class="md:col-span-4 flex items-center gap-4">
+              <div class="w-16 h-16 rounded-full border border-[#c5a059]/40 bg-[#121218] flex flex-col items-center justify-center">
+                <span id="val-temp" class="text-xl font-bold font-tech text-[#dfbe76]">72°</span>
+                <span class="text-[8px] font-tech text-[#888] uppercase">Target</span>
+              </div>
+              <div class="flex-1 space-y-1.5">
+                <div class="text-xs font-tech text-[#f5f2eb]">Precision HVAC Zoning</div>
+                <input id="input-temp" type="range" min="68" max="78" step="1" value="72" class="w-full bg-[#1a1a24] h-1.5 rounded-lg cursor-pointer" />
+                <div class="flex justify-between text-[9px] text-[#777] font-tech"><span>68°F (20°C)</span><span>78°F (25°C)</span></div>
+              </div>
+            </div>
+            <div class="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="p-2.5 rounded-md border border-white/10 bg-[#121218]/40 space-y-1.5">
+                <div class="flex justify-between items-center text-xs font-tech">
+                  <span class="text-[#a8a39d]">Airflow Ionization</span>
+                  <button id="btn-airflow" class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#88ddff]/20 text-[#88ddff] cursor-pointer">ACTIVE</button>
+                </div>
+                <div class="text-[10px] text-[#777]">Micro-current HEPA stream visualizing laminar thermal dispersion.</div>
+              </div>
+              <div class="p-2.5 rounded-md border border-white/10 bg-[#121218]/40 space-y-1.5">
+                <div class="flex justify-between text-xs font-tech">
+                  <span class="text-[#ff8833]">Sunken Lounge Firepit</span>
+                  <span id="val-fire" class="text-[#dfbe76]">85%</span>
+                </div>
+                <input id="input-fire" type="range" min="0" max="1" step="0.05" value="0.85" class="w-full bg-[#1a1a24] h-1.5 rounded-lg cursor-pointer" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 4: Security -->
+          <div id="panel-security" class="dock-panel hidden grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+            <div class="md:col-span-5 space-y-2">
+              <div class="text-[10px] uppercase font-tech tracking-widest text-[#a8a39d]">Autonomous Perimeter State</div>
+              <div class="grid grid-cols-3 gap-2">
+                <button data-sec="armed" class="sec-mode-btn px-2.5 py-2 rounded-md border border-[#44ffaa] text-[#44ffaa] bg-white/5 font-semibold text-xs font-tech cursor-pointer">Armed Shield</button>
+                <button data-sec="home" class="sec-mode-btn px-2.5 py-2 rounded-md border border-white/10 text-[#777] text-xs font-tech cursor-pointer">At Home</button>
+                <button data-sec="standby" class="sec-mode-btn px-2.5 py-2 rounded-md border border-white/10 text-[#777] text-xs font-tech cursor-pointer">Standby</button>
+              </div>
+            </div>
+            <div class="md:col-span-7 flex flex-wrap gap-3">
+              <button id="btn-lidar" class="flex-1 min-w-[180px] flex items-center justify-between px-3.5 py-2.5 rounded-md border border-[#44ffaa]/70 bg-[#44ffaa]/10 text-[#44ffaa] text-xs font-tech cursor-pointer">
+                <span>Lidar Ground Grid</span><span id="lbl-lidar" class="text-[10px]">ACTIVE</span>
+              </button>
+              <button id="btn-gate" class="flex-1 min-w-[180px] flex items-center justify-between px-3.5 py-2.5 rounded-md border border-[#c5a059] bg-[#c5a059]/15 text-[#dfbe76] text-xs font-tech cursor-pointer">
+                <span>Biometric Portal</span><span id="lbl-gate" class="text-[10px]">ENCRYPTED</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Panel 5: Solar Chrono -->
+          <div id="panel-atmosphere" class="dock-panel hidden space-y-3">
+            <div class="flex justify-between items-center text-xs font-tech">
+              <span class="text-[#a8a39d]">Solar Hour & Architectural Atmosphere</span>
+              <span id="val-solar" class="text-[#dfbe76] font-semibold text-sm">18:30</span>
+            </div>
+            <input id="input-solar" type="range" min="0" max="24" step="0.5" value="18.5" class="w-full bg-[#1a1a24] h-2 rounded-lg cursor-pointer" />
+            <div class="flex justify-between text-[11px] font-tech text-[#888]">
+              <button data-hour="6" class="hour-preset hover:text-[#c5a059] cursor-pointer">06:00 Dawn</button>
+              <button data-hour="12" class="hour-preset hover:text-[#c5a059] cursor-pointer">12:00 Midday</button>
+              <button data-hour="18.5" class="hour-preset hover:text-[#c5a059] cursor-pointer">18:30 Sunset</button>
+              <button data-hour="23" class="hour-preset hover:text-[#c5a059] cursor-pointer">23:00 Midnight</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDITORIAL STORYTELLING -->
+  <main id="architectural-narrative" class="relative bg-[#07070a] text-[#ede9e0] z-20">
+    <section class="py-24 px-6 md:px-12 border-t border-white/10 max-w-7xl mx-auto">
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-8">
+        <div class="max-w-2xl">
+          <span class="text-xs uppercase tracking-[0.3em] text-[#c5a059] font-tech block mb-3">Spatial Philosophy • 01</span>
+          <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-[#fdfbf7] leading-tight">
+            Where Kinetic Architecture Meets <span class="gold-gradient-text">Invisible Intelligence</span>
+          </h2>
+        </div>
+        <p class="max-w-md text-sm text-[#a8a39d] leading-relaxed">
+          A residence conceived not as inert shelter, but as a living autonomic organism. Every glass façade, structural cantilever, and acoustic louver choreographs light, air, and privacy in real time.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="p-8 rounded-lg bg-[#0e0e14] border border-white/10 hover:border-[#c5a059]/40 transition-all">
+          <div class="w-12 h-12 rounded-sm border border-[#c5a059]/30 bg-[#161620] flex items-center justify-center text-[#c5a059] mb-6 text-xl">▤</div>
+          <h3 class="font-display text-xl text-[#f5f2eb] mb-3">Post-Tensioned Cantilevers</h3>
+          <p class="text-xs text-[#9c978f] leading-relaxed">12-meter unobstructed overhangs float seamlessly over the landscaped terrain, framing panoramic horizon vistas without intermediate structural columns.</p>
+        </div>
+        <div class="p-8 rounded-lg bg-[#0e0e14] border border-white/10 hover:border-[#c5a059]/40 transition-all">
+          <div class="w-12 h-12 rounded-sm border border-[#c5a059]/30 bg-[#161620] flex items-center justify-center text-[#c5a059] mb-6 text-xl">⚡</div>
+          <h3 class="font-display text-xl text-[#f5f2eb] mb-3">Photovoltaic Glazing</h3>
+          <p class="text-xs text-[#9c978f] leading-relaxed">Transparent perovskite solar cells embedded inside floor-to-ceiling glass generate up to 48kWh daily while dynamically filtering infrared thermal radiation.</p>
+        </div>
+        <div class="p-8 rounded-lg bg-[#0e0e14] border border-white/10 hover:border-[#c5a059]/40 transition-all">
+          <div class="w-12 h-12 rounded-sm border border-[#c5a059]/30 bg-[#161620] flex items-center justify-center text-[#c5a059] mb-6 text-xl">∿</div>
+          <h3 class="font-display text-xl text-[#f5f2eb] mb-3">Acoustic Seclusion</h3>
+          <p class="text-xs text-[#9c978f] leading-relaxed">Multi-chamber thermal breaks and recessed acoustic oak battens attenuate external sound down to a whisper-quiet 18dB sound floor.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="intelligence-systems" class="py-24 px-6 md:px-12 bg-[#09090d] border-t border-white/10">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-2xl mx-auto mb-20">
+          <span class="text-xs uppercase tracking-[0.3em] text-[#c5a059] font-tech block mb-3">Autonomic Ecosystem • 02</span>
+          <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-medium text-[#fdfbf7]">The Four Sensory Pillars</h2>
+          <p class="mt-4 text-xs sm:text-sm text-[#9c978f]">Sub-second neural algorithms anticipate your physical needs through biological rhythms, micro-climate tuning, and invisible shields.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="p-8 rounded-xl bg-[#0f0f16] border border-white/10 hover:border-[#c5a059]/40 transition-all">
+            <h3 class="font-display text-lg text-[#f5f2eb] mb-1">Circadian Luminescence</h3>
+            <span class="text-[10px] text-[#c5a059] font-tech uppercase tracking-widest block mb-4">Tunable 1800K — 6500K</span>
+            <p class="text-xs text-[#a8a39d] leading-relaxed">Full-spectrum LED matrices synchronize with the solar azimuth, shifting seamlessly from 5000K morning clarity to an intimate 2200K sunset glow.</p>
+          </div>
+          <div class="p-8 rounded-xl bg-[#0f0f16] border border-white/10 hover:border-[#c5a059]/40 transition-all">
+            <h3 class="font-display text-lg text-[#f5f2eb] mb-1">Electrochromic Privacy & Drapery</h3>
+            <span class="text-[10px] text-[#c5a059] font-tech uppercase tracking-widest block mb-4">0.2s Molecular Transition</span>
+            <p class="text-xs text-[#a8a39d] leading-relaxed">Liquid crystal polymers align instantly under micro-voltage, turning crystal glass opaque without mechanical shades while motorized louvers deflect solar gain.</p>
+          </div>
+          <div class="p-8 rounded-xl bg-[#0f0f16] border border-white/10 hover:border-[#88ddff]/40 transition-all">
+            <h3 class="font-display text-lg text-[#f5f2eb] mb-1">Micro-Atmosphere & Ionization</h3>
+            <span class="text-[10px] text-[#88ddff] font-tech uppercase tracking-widest block mb-4">Medical-Grade H14 Filtration</span>
+            <p class="text-xs text-[#a8a39d] leading-relaxed">Displacement ventilation generates draft-free laminar currents replenishing alpine-purity air every 9 minutes via geothermal heat exchange.</p>
+          </div>
+          <div class="p-8 rounded-xl bg-[#0f0f16] border border-white/10 hover:border-[#44ffaa]/40 transition-all">
+            <h3 class="font-display text-lg text-[#f5f2eb] mb-1">Quantum Lidar Perimeter Shield</h3>
+            <span class="text-[10px] text-[#44ffaa] font-tech uppercase tracking-widest block mb-4">360° Real-Time Spatial Meshing</span>
+            <p class="text-xs text-[#a8a39d] leading-relaxed">Solid-state lidar sensors trace an invisible holographic cordon around the villa perimeters, paired with biometric facial & gait recognition.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="finishes-studio" class="py-24 px-6 md:px-12 border-t border-white/10 max-w-7xl mx-auto">
+      <div class="max-w-3xl mb-14">
+        <span class="text-xs uppercase tracking-[0.3em] text-[#c5a059] font-tech block mb-3">Bespoke Atelier • 03</span>
+        <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-medium text-[#fdfbf7] leading-tight">Curated Material Palettes</h2>
+        <p class="mt-3 text-xs sm:text-sm text-[#9c978f]">Select an architectural material below to update the 3D villa PBR finishes in real time.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div data-finish="champagne-brass" class="finish-card p-6 rounded-xl border border-[#c5a059] bg-[#161622] shadow-[0_0_25px_rgba(197,160,89,0.25)] transition-all duration-300 cursor-pointer flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-10 h-10 rounded-full border border-white/20" style="background:#d4af37"></div>
+              <span class="text-[10px] font-tech uppercase text-[#a8a39d]">Brescia, Italy</span>
+            </div>
+            <h3 class="font-display text-lg text-[#f5f2eb] mb-2">Brushed Champagne Brass</h3>
+            <p class="text-xs text-[#9c978f] leading-relaxed mb-6">Hand-burnished warm gold alloy with micro-anisotropic satin grain.</p>
+          </div>
+          <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-tech">
+            <span class="finish-status text-[#c5a059] font-bold">ACTIVE IN 3D SCENE</span>
+          </div>
+        </div>
+
+        <div data-finish="obsidian-titanium" class="finish-card p-6 rounded-xl border border-white/10 bg-[#0c0c12] hover:border-white/30 transition-all duration-300 cursor-pointer flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-10 h-10 rounded-full border border-white/20" style="background:#1e1e26"></div>
+              <span class="text-[10px] font-tech uppercase text-[#a8a39d]">Zurich, Switzerland</span>
+            </div>
+            <h3 class="font-display text-lg text-[#f5f2eb] mb-2">Obsidian PVD Titanium</h3>
+            <p class="text-xs text-[#9c978f] leading-relaxed mb-6">Aerospace-grade vapor-deposited titanium with deep charcoal reflection.</p>
+          </div>
+          <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-tech">
+            <span class="finish-status text-[#666]">CLICK TO APPLY</span>
+          </div>
+        </div>
+
+        <div data-finish="carrara-marble" class="finish-card p-6 rounded-xl border border-white/10 bg-[#0c0c12] hover:border-white/30 transition-all duration-300 cursor-pointer flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-10 h-10 rounded-full border border-white/20" style="background:#eae7e1"></div>
+              <span class="text-[10px] font-tech uppercase text-[#a8a39d]">Tuscany, Italy</span>
+            </div>
+            <h3 class="font-display text-lg text-[#f5f2eb] mb-2">Carrara Statuario Extra</h3>
+            <p class="text-xs text-[#9c978f] leading-relaxed mb-6">Pure crystalline white marble honed to a velvety architectural touch.</p>
+          </div>
+          <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-tech">
+            <span class="finish-status text-[#666]">CLICK TO APPLY</span>
+          </div>
+        </div>
+
+        <div data-finish="smoked-oak" class="finish-card p-6 rounded-xl border border-white/10 bg-[#0c0c12] hover:border-white/30 transition-all duration-300 cursor-pointer flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-10 h-10 rounded-full border border-white/20" style="background:#3d2e22"></div>
+              <span class="text-[10px] font-tech uppercase text-[#a8a39d]">Telemark, Norway</span>
+            </div>
+            <h3 class="font-display text-lg text-[#f5f2eb] mb-2">Nordic Smoked Bog Oak</h3>
+            <p class="text-xs text-[#9c978f] leading-relaxed mb-6">Centuries-aged dark acoustic timber finished with natural organic oils.</p>
+          </div>
+          <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-tech">
+            <span class="finish-status text-[#666]">CLICK TO APPLY</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="spatial-specs" class="py-24 px-6 md:px-12 bg-[#09090d] border-t border-white/10">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-6">
+          <div>
+            <span class="text-xs uppercase tracking-[0.3em] text-[#c5a059] font-tech block mb-3">Architectural Metrics • 04</span>
+            <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-medium text-[#fdfbf7]">Masterplan Specifications</h2>
+          </div>
+          <div class="text-xs font-tech text-[#c5a059] uppercase tracking-widest">LEED Platinum Certified • Net-Positive Energy</div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+          <div class="p-6 rounded-lg bg-[#0e0e14] border border-white/10">
+            <div class="text-2xl sm:text-3xl font-display text-[#dfbe76] mb-1">14,200</div>
+            <div class="text-[10px] font-tech uppercase tracking-widest text-[#888]">Interior Conditioned Sq.Ft</div>
+          </div>
+          <div class="p-6 rounded-lg bg-[#0e0e14] border border-white/10">
+            <div class="text-2xl sm:text-3xl font-display text-[#dfbe76] mb-1">18.5 m</div>
+            <div class="text-[10px] font-tech uppercase tracking-widest text-[#888]">Cantilevered Infinity Pool</div>
+          </div>
+          <div class="p-6 rounded-lg bg-[#0e0e14] border border-white/10">
+            <div class="text-2xl sm:text-3xl font-display text-[#dfbe76] mb-1">5 Suites</div>
+            <div class="text-[10px] font-tech uppercase tracking-widest text-[#888]">Self-Contained Micro-Penthouses</div>
+          </div>
+          <div class="p-6 rounded-lg bg-[#0e0e14] border border-white/10">
+            <div class="text-2xl sm:text-3xl font-display text-[#dfbe76] mb-1">100%</div>
+            <div class="text-[10px] font-tech uppercase tracking-widest text-[#888]">Off-Grid Energy Autonomy</div>
+          </div>
+        </div>
+
+        <div class="relative rounded-2xl luxury-glass p-8 sm:p-12 overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+          <div class="max-w-xl">
+            <h3 class="font-display text-2xl sm:text-3xl text-[#fdfbf7] mb-3">Experience the Residence in Person</h3>
+            <p class="text-xs sm:text-sm text-[#a8a39d] leading-relaxed">Private architectural walkthroughs are held weekly by invitation. Experience responsive spatial acoustic tuning and kinetic glazing firsthand.</p>
+          </div>
+          <button id="btn-open-vip-bottom" class="px-8 py-4 rounded-sm bg-[#c5a059] text-[#07070a] font-display font-semibold text-sm tracking-wider uppercase hover:bg-[#dfbe76] transition-all cursor-pointer whitespace-nowrap">Request Private Tour</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#050507] border-t border-white/10 text-[#a8a39d] py-16 px-6 md:px-12 relative z-20">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#666] font-tech gap-4">
+      <div>© 2026 AURA AUTONOMOUS ESTATES AG. ALL RIGHTS RESERVED.</div>
+      <div class="text-[#c5a059]">Geneva • Dubai • Zurich • Bel Air</div>
+    </div>
+  </footer>
+
+  <!-- VIP MODAL -->
+  <div id="vip-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div id="vip-backdrop" class="absolute inset-0 bg-[#050508]/85"></div>
+    <div class="relative w-full max-w-xl rounded-2xl luxury-glass p-6 sm:p-8 z-10 border border-[#c5a059]/40 shadow-2xl">
+      <button id="btn-close-vip" class="absolute top-5 right-5 w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-[#a8a39d] hover:text-[#f5f2eb] cursor-pointer">✕</button>
+      <form id="vip-form" class="space-y-4">
+        <div>
+          <span class="text-[10px] uppercase font-tech tracking-[0.25em] text-[#c5a059] block mb-1">Bespoke Acquisition • Confidential</span>
+          <h3 class="font-display text-2xl text-[#fdfbf7]">Schedule Private Consultation</h3>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <input id="vip-name" type="text" required placeholder="Full Name" class="w-full px-3 py-2 rounded-md bg-[#121218] border border-white/10 text-xs text-[#ede9e0] outline-none focus:border-[#c5a059]" />
+          <input id="vip-email" type="email" required placeholder="Direct Email" class="w-full px-3 py-2 rounded-md bg-[#121218] border border-white/10 text-xs text-[#ede9e0] outline-none focus:border-[#c5a059]" />
+        </div>
+        <select id="vip-location" class="w-full px-3 py-2 rounded-md bg-[#121218] border border-white/10 text-xs text-[#ede9e0] outline-none focus:border-[#c5a059]">
+          <option>Geneva, Switzerland</option>
+          <option>Dubai, Palm Jumeirah</option>
+          <option>Bel Air, California</option>
+          <option>St. Moritz Alpine Estate</option>
+        </select>
+        <textarea rows="2" placeholder="Special architectural requirements..." class="w-full px-3 py-2 rounded-md bg-[#121218] border border-white/10 text-xs text-[#ede9e0] outline-none resize-none focus:border-[#c5a059]"></textarea>
+        <div class="flex justify-end">
+          <button type="submit" class="px-6 py-2.5 rounded-sm bg-[#c5a059] text-[#07070a] font-display text-xs uppercase tracking-wider font-semibold hover:bg-[#dfbe76] cursor-pointer">Submit Request</button>
+        </div>
+      </form>
+      <div id="vip-success" class="hidden text-center py-6 space-y-4">
+        <div class="text-[#dfbe76] text-3xl">✦</div>
+        <h3 class="font-display text-2xl text-[#fdfbf7]">Private Viewing Requested</h3>
+        <p class="text-xs text-[#9c978f]">Your confidential dossier (<span class="text-[#c5a059]">AURA-PRV-9842X</span>) has been routed to our Senior Architectural Partner.</p>
+        <button id="btn-vip-done" class="px-6 py-2 rounded-sm bg-[#c5a059] text-[#07070a] font-display text-xs uppercase font-semibold cursor-pointer">Return to 3D Experience</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- THREE.JS & INTERACTIVE APPLICATION SCRIPT -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+    const state = {
+      lightingPreset: 'sunset',
+      interiorDimmer: 0.9,
+      facadeUplights: true,
+      poolLights: true,
+      curtainOpenRatio: 0.7,
+      louverAngle: 25,
+      privacyGlassFrosted: false,
+      temperatureFahrenheit: 72,
+      airflowActive: true,
+      firepitIntensity: 0.85,
+      securityStatus: 'armed',
+      lidarScannerActive: true,
+      biometricGateLocked: true,
+      timeOfDay: 18.5,
+      cameraView: 'exterior',
+      finish: 'champagne-brass',
+      soundEnabled: false,
+      activeHotspotId: null,
+      dockCollapsed: false
+    };
+
+    class LuxuryAudio {
+      constructor() { this.ctx = null; this.master = null; this.ambient = null; }
+      init() {
+        if (!this.ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) {
+            this.ctx = new AC();
+            this.master = this.ctx.createGain();
+            this.master.gain.value = 0.45;
+            this.master.connect(this.ctx.destination);
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+      }
+      setEnabled(on) {
+        if (on) {
+          this.init();
+          if (this.ctx && !this.ambient) {
+            const g = this.ctx.createGain();
+            g.gain.setValueAtTime(0.001, this.ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.07, this.ctx.currentTime + 2);
+            const o1 = this.ctx.createOscillator(); o1.frequency.value = 48;
+            const o2 = this.ctx.createOscillator(); o2.frequency.value = 72;
+            const f = this.ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 140;
+            o1.connect(f); o2.connect(f); f.connect(g); g.connect(this.master);
+            o1.start(); o2.start();
+            this.ambient = { g, o1, o2 };
+          }
+        } else if (this.ambient) {
+          this.ambient.o1.stop(); this.ambient.o2.stop();
+          this.ambient.g.disconnect(); this.ambient = null;
+        }
+      }
+      tone(freq1, freq2, dur = 0.15) {
+        if (!state.soundEnabled) return;
+        this.init(); if (!this.ctx) return;
+        const t = this.ctx.currentTime;
+        const o = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        o.frequency.setValueAtTime(freq1, t);
+        o.frequency.exponentialRampToValueAtTime(freq2, t + dur);
+        g.gain.setValueAtTime(0.05, t);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        o.connect(g); g.connect(this.master);
+        o.start(t); o.stop(t + dur + 0.02);
+      }
+    }
+    const audio = new LuxuryAudio();
+
+    function makeTravertineTex() {
+      const c = document.createElement('canvas'); c.width = c.height = 512;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#dfd8cb'; ctx.fillRect(0, 0, 512, 512);
+      for (let y = 0; y < 512; y += 4) {
+        ctx.fillStyle = `rgba(180,170,155,${0.03 + Math.sin(y * 0.05) * 0.02})`;
+        ctx.fillRect(0, y, 512, 4);
+      }
+      ctx.strokeStyle = 'rgba(120,110,95,0.25)'; ctx.lineWidth = 2;
+      ctx.strokeRect(0, 0, 512, 512); ctx.strokeRect(0, 0, 256, 512);
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(4, 4);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    }
+
+    function makeWoodSlatTex() {
+      const c = document.createElement('canvas'); c.width = c.height = 512;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#211a14'; ctx.fillRect(0, 0, 512, 512);
+      for (let x = 0; x < 512; x += 22) {
+        ctx.fillStyle = '#2c221a'; ctx.fillRect(x, 0, 16, 512);
+        ctx.fillStyle = '#0a0806'; ctx.fillRect(x + 16, 0, 6, 512);
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 2);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    }
+
+    function makeMarbleTex() {
+      const c = document.createElement('canvas'); c.width = c.height = 512;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#0f1013'; ctx.fillRect(0, 0, 512, 512);
+      ctx.strokeStyle = 'rgba(235,220,180,0.35)'; ctx.lineWidth = 1.5;
+      for (let v = 0; v < 6; v++) {
+        ctx.beginPath(); let cx = Math.random() * 512, cy = 0; ctx.moveTo(cx, cy);
+        while (cy < 512) { cx += (Math.random() - 0.48) * 40; cy += 25; ctx.lineTo(cx, cy); }
+        ctx.stroke();
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    }
+
+    function makeWaterNormalTex() {
+      const c = document.createElement('canvas'); c.width = c.height = 256;
+      const ctx = c.getContext('2d');
+      const img = ctx.createImageData(256, 256);
+      for (let y = 0; y < 256; y++) {
+        for (let x = 0; x < 256; x++) {
+          const idx = (y * 256 + x) * 4;
+          img.data[idx] = Math.floor((Math.sin(x * 0.1) * Math.cos(y * 0.08) * 0.5 + 0.5) * 255);
+          img.data[idx + 1] = Math.floor((Math.cos(x * 0.08) * Math.sin(y * 0.1) * 0.5 + 0.5) * 255);
+          img.data[idx + 2] = 255; img.data[idx + 3] = 255;
+        }
+      }
+      ctx.putImageData(img, 0, 0);
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(6, 6);
+      return t;
+    }
+
+    function makeLidarTex() {
+      const c = document.createElement('canvas'); c.width = c.height = 512;
+      const ctx = c.getContext('2d');
+      ctx.strokeStyle = 'rgba(70,220,200,0.8)'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(256, 256, 240, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = 'rgba(70,220,200,0.4)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(256, 256, 170, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(256, 256, 100, 0, Math.PI * 2); ctx.stroke();
+      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    }
+
+    const mount = document.getElementById('three-mount');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x1c1114);
+    scene.fog = new THREE.FogExp2(0x1c1114, 0.015);
+
+    const camera = new THREE.PerspectiveCamera(42, mount.clientWidth / mount.clientHeight, 0.1, 150);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    renderer.setSize(mount.clientWidth, mount.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    mount.appendChild(renderer.domElement);
+
+    try {
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+      pmrem.dispose();
+    } catch {}
+
+    const sunLight = new THREE.DirectionalLight(0xff8c42, 2.4);
+    sunLight.position.set(22, 28, 16);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.set(2048, 2048);
+    sunLight.shadow.camera.left = -22; sunLight.shadow.camera.right = 22;
+    sunLight.shadow.camera.top = 22; sunLight.shadow.camera.bottom = -22;
+    sunLight.shadow.bias = -0.0005;
+    scene.add(sunLight);
+
+    const hemiLight = new THREE.HemisphereLight(0x503530, 0x181014, 0.8);
+    scene.add(hemiLight);
+
+    const villa = new THREE.Group();
+    scene.add(villa);
+
+    const travertineTex = makeTravertineTex();
+    const woodTex = makeWoodSlatTex();
+    const marbleTex = makeMarbleTex();
+    const waterNormalTex = makeWaterNormalTex();
+    const lidarTex = makeLidarTex();
+
+    const travertineMat = new THREE.MeshStandardMaterial({ map: travertineTex, roughness: 0.75, metalness: 0.05 });
+    const woodMat = new THREE.MeshStandardMaterial({ map: woodTex, roughness: 0.5, metalness: 0.1 });
+    const marbleMat = new THREE.MeshStandardMaterial({ map: marbleTex, roughness: 0.25, metalness: 0.2 });
+    const concreteMat = new THREE.MeshStandardMaterial({ color: 0x1a1a20, roughness: 0.85, metalness: 0.15 });
+    const accentMetalMat = new THREE.MeshPhysicalMaterial({ color: 0xd4af37, roughness: 0.22, metalness: 0.88, clearcoat: 0.4 });
+    const glassMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, transmission: 0.92, transparent: true, roughness: 0.04, ior: 1.52, thickness: 0.6, clearcoat: 1.0, depthWrite: false });
+    const curtainMat = new THREE.MeshStandardMaterial({ color: 0xf5ede0, roughness: 0.9, transparent: true, opacity: 0.75, side: THREE.DoubleSide });
+
+    const terrace = new THREE.Mesh(new THREE.BoxGeometry(32, 0.6, 26), travertineMat);
+    terrace.position.set(0, 0.3, 0); terrace.receiveShadow = true; villa.add(terrace);
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(70, 70), new THREE.MeshStandardMaterial({ color: 0x0e1111, roughness: 0.95 }));
+    ground.rotation.x = -Math.PI / 2; ground.position.y = 0.01; ground.receiveShadow = true; villa.add(ground);
+
+    const poolBasin = new THREE.Mesh(new THREE.BoxGeometry(11, 1.2, 5.5), new THREE.MeshStandardMaterial({ color: 0x081520, roughness: 0.2, metalness: 0.4 }));
+    poolBasin.position.set(5.5, 0.5, 6.5); villa.add(poolBasin);
+    const waterMesh = new THREE.Mesh(new THREE.PlaneGeometry(10.6, 5.1), new THREE.MeshStandardMaterial({ color: 0x0a3d52, roughness: 0.06, metalness: 0.6, normalMap: waterNormalTex, transparent: true, opacity: 0.88 }));
+    waterMesh.rotation.x = -Math.PI / 2; waterMesh.position.set(5.5, 1.05, 6.5); villa.add(waterMesh);
+    const poolRim = new THREE.Mesh(new THREE.BoxGeometry(11.2, 0.1, 5.7), accentMetalMat);
+    poolRim.position.set(5.5, 1.1, 6.5); villa.add(poolRim);
+    const poolLight = new THREE.PointLight(0x22d4ff, 3.5, 10);
+    poolLight.position.set(5.5, 0.6, 6.5); villa.add(poolLight);
+
+    const fireBase = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.4, 0.6, 32), marbleMat);
+    fireBase.position.set(-6.5, 0.7, 6.5); villa.add(fireBase);
+    const fireStrip = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.08, 0.3), new THREE.MeshBasicMaterial({ color: 0xff7722 }));
+    fireStrip.position.set(-6.5, 1.1, 6.5); villa.add(fireStrip);
+    const fireLight = new THREE.PointLight(0xff7722, 2.5, 9);
+    fireLight.position.set(-6.5, 1.6, 6.5); villa.add(fireLight);
+
+    const fireCount = 45, fireGeo = new THREE.BufferGeometry(), firePos = new Float32Array(fireCount * 3);
+    for (let i = 0; i < fireCount; i++) {
+      firePos[i * 3] = -6.5 + (Math.random() - 0.5) * 1.6;
+      firePos[i * 3 + 1] = 1.1 + Math.random() * 0.8;
+      firePos[i * 3 + 2] = 6.5 + (Math.random() - 0.5) * 0.3;
+    }
+    fireGeo.setAttribute('position', new THREE.BufferAttribute(firePos, 3));
+    const fireMat = new THREE.PointsMaterial({ color: 0xffaa33, size: 0.12, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending });
+    const fireParticles = new THREE.Points(fireGeo, fireMat);
+    villa.add(fireParticles);
+
+    const backWall = new THREE.Mesh(new THREE.BoxGeometry(18, 4.2, 0.5), concreteMat);
+    backWall.position.set(0, 2.7, -4.5); backWall.castShadow = true; villa.add(backWall);
+    const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.5, 4.2, 8), concreteMat);
+    leftWall.position.set(-8.75, 2.7, -0.5); leftWall.castShadow = true; villa.add(leftWall);
+    const groundCeiling = new THREE.Mesh(new THREE.BoxGeometry(18, 0.4, 9), woodMat);
+    groundCeiling.position.set(0, 4.7, -0.5); groundCeiling.castShadow = true; villa.add(groundCeiling);
+
+    const sofa = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.45, 2.4), new THREE.MeshStandardMaterial({ color: 0x18181f, roughness: 0.8 }));
+    sofa.position.set(0, 0.85, -1.5); sofa.castShadow = true; villa.add(sofa);
+    const table = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 0.35, 32), marbleMat);
+    table.position.set(0, 0.8, 1.2); villa.add(table);
+    const chandelier = new THREE.Mesh(new THREE.TorusGeometry(1.2, 0.04, 16, 64), accentMetalMat);
+    chandelier.rotation.x = Math.PI / 2; chandelier.position.set(0, 4.2, -0.8); villa.add(chandelier);
+
+    const livingLight = new THREE.PointLight(0xffe2b8, 3.5, 12);
+    livingLight.position.set(0, 4.0, -0.8); livingLight.castShadow = true; villa.add(livingLight);
+    const interiorPoint = new THREE.PointLight(0xffdfba, 2.5, 14);
+    interiorPoint.position.set(-2, 3.2, -2); villa.add(interiorPoint);
+
+    const frontGlass = new THREE.Mesh(new THREE.BoxGeometry(16, 3.8, 0.08), glassMat);
+    frontGlass.position.set(0, 2.7, 3.8); villa.add(frontGlass);
+    for (let mx = -8; mx <= 8; mx += 4) {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(0.08, 3.8, 0.12), accentMetalMat);
+      m.position.set(mx, 2.7, 3.8); villa.add(m);
+    }
+
+    const leftCurtain = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 3.6), curtainMat);
+    leftCurtain.position.set(-4.2, 2.7, 3.65); villa.add(leftCurtain);
+    const rightCurtain = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 3.6), curtainMat);
+    rightCurtain.position.set(4.2, 2.7, 3.65); villa.add(rightCurtain);
+
+    const louvers = [];
+    for (let l = 0; l < 8; l++) {
+      const g = new THREE.Group(); g.position.set(8.8, 2.7, -3.5 + l * 0.9);
+      g.add(new THREE.Mesh(new THREE.BoxGeometry(0.04, 3.8, 0.65), accentMetalMat));
+      villa.add(g); louvers.push(g);
+    }
+
+    const pentSlab = new THREE.Mesh(new THREE.BoxGeometry(14, 0.5, 10), concreteMat);
+    pentSlab.position.set(2.5, 5.1, 0.5); pentSlab.castShadow = true; villa.add(pentSlab);
+    const pentRoof = new THREE.Mesh(new THREE.BoxGeometry(14.8, 0.45, 10.8), concreteMat);
+    pentRoof.position.set(2.5, 8.4, 0.5); pentRoof.castShadow = true; villa.add(pentRoof);
+    const pentGlass = new THREE.Mesh(new THREE.BoxGeometry(13.6, 2.8, 0.08), glassMat);
+    pentGlass.position.set(2.5, 6.75, 4.8); villa.add(pentGlass);
+    const pentBack = new THREE.Mesh(new THREE.BoxGeometry(13.6, 2.8, 0.4), travertineMat);
+    pentBack.position.set(2.5, 6.75, -4.2); villa.add(pentBack);
+    const pentBed = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.5, 3.0), new THREE.MeshStandardMaterial({ color: 0xded8cf, roughness: 0.7 }));
+    pentBed.position.set(4.0, 5.5, -0.5); villa.add(pentBed);
+    const pentLight = new THREE.PointLight(0xffe2c0, 2.8, 11);
+    pentLight.position.set(3.0, 7.5, 0.5); villa.add(pentLight);
+
+    const facadeSpots = [];
+    [[-8, 0.6, 4.2], [-2, 0.6, 4.2], [4, 0.6, 4.2], [9.5, 0.6, 2.0]].forEach(pos => {
+      const f = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 0.15, 16), accentMetalMat);
+      f.position.set(...pos); villa.add(f);
+      const s = new THREE.SpotLight(0xffd59e, 4.5, 12, Math.PI / 5, 0.4);
+      s.position.set(pos[0], pos[1] + 0.1, pos[2]);
+      const t = new THREE.Object3D(); t.position.set(pos[0], pos[1] + 5, pos[2] - 1.2);
+      villa.add(t); s.target = t; villa.add(s); facadeSpots.push(s);
+    });
+
+    [[-12, 0.3, -4], [-11, 0.3, 1], [-12.5, 0.3, 7], [12.5, 0.3, -6], [13.5, 0.3, -1]].forEach(pos => {
+      const tg = new THREE.Group(); tg.position.set(...pos);
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.18, 1.2, 12), new THREE.MeshStandardMaterial({ color: 0x241e17 }));
+      trunk.position.y = 0.6; tg.add(trunk);
+      const fMat = new THREE.MeshStandardMaterial({ color: 0x18241b, roughness: 0.85 });
+      const c1 = new THREE.Mesh(new THREE.ConeGeometry(0.85, 3.2, 16), fMat); c1.position.y = 2.4; c1.castShadow = true; tg.add(c1);
+      const c2 = new THREE.Mesh(new THREE.ConeGeometry(0.7, 2.6, 16), fMat); c2.position.y = 3.6; c2.castShadow = true; tg.add(c2);
+      villa.add(tg);
+    });
+
+    const lidarMesh = new THREE.Mesh(new THREE.PlaneGeometry(16, 16), new THREE.MeshBasicMaterial({ map: lidarTex, transparent: true, opacity: 0.6, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
+    lidarMesh.rotation.x = -Math.PI / 2; lidarMesh.position.set(-6, 0.35, 3); villa.add(lidarMesh);
+    const totem = new THREE.Mesh(new THREE.BoxGeometry(0.2, 1.4, 0.2), accentMetalMat);
+    totem.position.set(-10, 1.0, 3.5); villa.add(totem);
+    const beaconMat = new THREE.MeshBasicMaterial({ color: 0x44ffaa });
+    const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 16), beaconMat);
+    beacon.position.set(-10, 1.7, 3.5); villa.add(beacon);
+
+    const airCount = 120, airGeo = new THREE.BufferGeometry(), airPos = new Float32Array(airCount * 3);
+    for (let i = 0; i < airCount; i++) {
+      airPos[i * 3] = -6 + Math.random() * 12;
+      airPos[i * 3 + 1] = 1.2 + Math.random() * 3;
+      airPos[i * 3 + 2] = -3 + Math.random() * 6;
+    }
+    airGeo.setAttribute('position', new THREE.BufferAttribute(airPos, 3));
+    const airMat = new THREE.PointsMaterial({ color: 0x88e0ff, size: 0.08, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending });
+    const airParticles = new THREE.Points(airGeo, airMat); villa.add(airParticles);
+
+    const currentCamPos = new THREE.Vector3(-16, 11, 23);
+    const currentLookAt = new THREE.Vector3(0, 3, 0);
+    const targetLookAt = new THREE.Vector3(0, 3, 0);
+    const orbit = new THREE.Spherical(29, 1.15, -0.6);
+    const targetOrbit = new THREE.Spherical(29, 1.15, -0.6);
+    let parallaxX = 0, parallaxY = 0, dragging = false, prevX = 0, prevY = 0;
+
+    function setCameraView(view) {
+      state.cameraView = view;
+      document.querySelectorAll('.cam-pill').forEach(b => {
+        const active = b.dataset.view === view;
+        b.className = active
+          ? 'cam-pill px-3.5 py-1.5 rounded-full text-xs font-tech tracking-wider uppercase transition-all cursor-pointer bg-[#c5a059] text-[#0a0a0d] font-semibold'
+          : 'cam-pill px-3.5 py-1.5 rounded-full text-xs font-tech tracking-wider uppercase transition-all cursor-pointer text-[#9c978f] hover:text-[#f5f2eb]';
+      });
+      if (view === 'exterior') { targetLookAt.set(0, 3, 0); targetOrbit.set(29, 1.15, -0.6); }
+      if (view === 'living') { targetLookAt.set(0, 2.8, 0); targetOrbit.set(11, 1.35, 0.05); }
+      if (view === 'pool') { targetLookAt.set(5.5, 1.2, 6.5); targetOrbit.set(9, 1.4, 0.8); }
+      if (view === 'penthouse') { targetLookAt.set(2.5, 6.8, 1); targetOrbit.set(12, 1.3, 0.45); }
+      if (view === 'security') { targetLookAt.set(-8.5, 1.4, 3.5); targetOrbit.set(10, 1.38, -0.95); }
+    }
+
+    function updateDayNight(hour) {
+      state.timeOfDay = hour;
+      const angle = ((hour - 6) / 24) * Math.PI * 2;
+      sunLight.position.set(Math.cos(angle) * 24, Math.max(1, Math.sin(angle) * 30), 16);
+      let bgHex = 0x06070a;
+      if (hour >= 6 && hour < 10) { sunLight.color.setHex(0xffcb9c); sunLight.intensity = 1.8; bgHex = 0x1a1520; }
+      else if (hour >= 10 && hour < 16) { sunLight.color.setHex(0xfffaf0); sunLight.intensity = 3.2; bgHex = 0x0d121c; }
+      else if (hour >= 16 && hour < 20) { sunLight.color.setHex(0xff8c42); sunLight.intensity = 2.4; bgHex = 0x1c1114; }
+      else { sunLight.color.setHex(0x406090); sunLight.intensity = 0.5; bgHex = 0x06070a; }
+      scene.background.setHex(bgHex); scene.fog.color.setHex(bgHex);
+      const hh = Math.floor(hour).toString().padStart(2, '0');
+      const mm = hour % 1 >= 0.5 ? '30' : '00';
+      document.getElementById('nav-time-label').textContent = `${hh}:${mm}`;
+      document.getElementById('val-solar').textContent = `${hh}:${mm}`;
+      document.getElementById('solar-icon').textContent = (hour >= 19 || hour < 6) ? '☾' : '☀';
+    }
+
+    const hotspots = [
+      { id: 'hs-lighting', name: 'Living Pavilion', sub: 'Circadian LED & Curtains', pos: new THREE.Vector3(0, 3.2, 3.8), view: 'living', tab: 'lighting' },
+      { id: 'hs-curtains', name: 'Master Suite', sub: 'Smart Privacy Glass', pos: new THREE.Vector3(2.5, 6.8, 4.8), view: 'penthouse', tab: 'curtains' },
+      { id: 'hs-pool', name: 'Infinity Pool', sub: 'Hydro-Lighting & Terrace', pos: new THREE.Vector3(5.5, 1.2, 6.5), view: 'pool', tab: 'climate' },
+      { id: 'hs-security', name: 'Perimeter Gate', sub: 'Lidar & Biometric Access', pos: new THREE.Vector3(-10, 1.8, 3.5), view: 'security', tab: 'security' }
+    ];
+    const hotspotsLayer = document.getElementById('hotspots-layer');
+    const hotspotEls = hotspots.map(hs => {
+      const btn = document.createElement('button');
+      btn.className = 'pointer-events-auto absolute -translate-x-1/2 -translate-y-1/2 flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/20 bg-[#0f0f15]/90 hover:border-[#c5a059] transition-all cursor-pointer';
+      btn.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#c5a059]"></span><span class="text-left hidden sm:block"><span class="block text-[11px] font-semibold text-[#f5f2eb] font-tech leading-none">${hs.name}</span><span class="block text-[9px] text-[#a8a39d] mt-0.5 leading-none">${hs.sub}</span></span>`;
+      btn.onclick = () => {
+        audio.tone(800, 500, 0.05);
+        setCameraView(hs.view);
+        activateTab(hs.tab);
+      };
+      hotspotsLayer.appendChild(btn);
+      return { hs, el: btn };
+    });
+
+    mount.addEventListener('pointerdown', e => { if (e.button === 0) { dragging = true; prevX = e.clientX; prevY = e.clientY; } });
+    window.addEventListener('pointermove', e => {
+      parallaxX = ((e.clientX / window.innerWidth) * 2 - 1) * 0.8;
+      parallaxY = -((e.clientY / window.innerHeight) * 2 - 1) * 0.4;
+      if (!dragging) return;
+      targetOrbit.theta -= (e.clientX - prevX) * 0.005;
+      targetOrbit.phi = Math.max(0.2, Math.min(Math.PI / 2 - 0.05, targetOrbit.phi - (e.clientY - prevY) * 0.005));
+      prevX = e.clientX; prevY = e.clientY;
+    });
+    window.addEventListener('pointerup', () => dragging = false);
+    mount.addEventListener('wheel', e => {
+      targetOrbit.radius = Math.max(10, Math.min(48, targetOrbit.radius + e.deltaY * 0.015));
+    }, { passive: true });
+    window.addEventListener('resize', () => {
+      camera.aspect = mount.clientWidth / mount.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(mount.clientWidth, mount.clientHeight);
+    });
+
+    function activateTab(tabId) {
+      document.querySelectorAll('.dock-tab').forEach(t => {
+        const active = t.dataset.tab === tabId;
+        t.className = active
+          ? 'dock-tab px-3 sm:px-4 py-2 rounded-lg text-[11px] font-tech uppercase tracking-wider cursor-pointer bg-[#c5a059]/20 text-[#dfbe76] border border-[#c5a059]/50 font-semibold whitespace-nowrap'
+          : 'dock-tab px-3 sm:px-4 py-2 rounded-lg text-[11px] font-tech uppercase tracking-wider cursor-pointer text-[#9c978f] hover:text-[#ede9e0] border border-transparent whitespace-nowrap';
+      });
+      document.querySelectorAll('.dock-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`panel-${tabId}`).classList.remove('hidden');
+    }
+    document.querySelectorAll('.dock-tab').forEach(t => t.onclick = () => { audio.tone(1000, 600, 0.04); activateTab(t.dataset.tab); });
+    document.querySelectorAll('.cam-pill').forEach(b => b.onclick = () => { audio.tone(1000, 600, 0.04); setCameraView(b.dataset.view); });
+
+    document.getElementById('btn-collapse-dock').onclick = () => {
+      state.dockCollapsed = !state.dockCollapsed;
+      const w = document.getElementById('control-dock-wrapper');
+      w.style.transform = state.dockCollapsed ? 'translate(-50%, calc(100% - 42px))' : 'translate(-50%, 0)';
+      document.getElementById('dock-collapse-label').textContent = state.dockCollapsed ? '▴ Show Smart Controls' : '▾ Cinema View / Hide Controls';
+    };
+
+    document.getElementById('btn-audio-toggle').onclick = () => {
+      state.soundEnabled = !state.soundEnabled;
+      audio.setEnabled(state.soundEnabled);
+      document.getElementById('icon-audio-off').classList.toggle('hidden', state.soundEnabled);
+      document.getElementById('icon-audio-on').classList.toggle('hidden', !state.soundEnabled);
+      if (state.soundEnabled) audio.tone(880, 1320, 0.25);
+    };
+
+    document.getElementById('btn-solar-toggle').onclick = () => {
+      const next = (state.timeOfDay >= 18 || state.timeOfDay < 6) ? 12 : 19;
+      document.getElementById('input-solar').value = next;
+      updateDayNight(next);
+    };
+
+    document.querySelectorAll('.light-preset-btn').forEach(b => b.onclick = () => {
+      state.lightingPreset = b.dataset.preset;
+      audio.tone(880, 1320, 0.2);
+      document.querySelectorAll('.light-preset-btn').forEach(x => {
+        const act = x.dataset.preset === state.lightingPreset;
+        x.className = act
+          ? 'light-preset-btn flex flex-col text-left px-3 py-2 rounded-md border border-[#c5a059] bg-[#c5a059]/15 text-[#f5f2eb] cursor-pointer'
+          : 'light-preset-btn flex flex-col text-left px-3 py-2 rounded-md border border-white/10 bg-[#121218]/60 text-[#a8a39d] cursor-pointer';
+      });
+    });
+
+    document.getElementById('input-dimmer').oninput = e => {
+      state.interiorDimmer = parseFloat(e.target.value);
+      document.getElementById('val-dimmer').textContent = `${Math.round(state.interiorDimmer * 100)}%`;
+    };
+    document.getElementById('btn-facade-lights').onclick = () => {
+      state.facadeUplights = !state.facadeUplights;
+      document.getElementById('lbl-facade').textContent = state.facadeUplights ? 'ON' : 'OFF';
+    };
+    document.getElementById('btn-pool-lights').onclick = () => {
+      state.poolLights = !state.poolLights;
+      document.getElementById('lbl-pool').textContent = state.poolLights ? 'ON' : 'OFF';
+    };
+
+    document.getElementById('input-curtain').oninput = e => {
+      state.curtainOpenRatio = parseFloat(e.target.value);
+      document.getElementById('val-curtain').textContent = `${Math.round(state.curtainOpenRatio * 100)}% Open`;
+    };
+    document.getElementById('btn-privacy-glass').onclick = () => {
+      state.privacyGlassFrosted = !state.privacyGlassFrosted;
+      document.getElementById('lbl-glass-state').textContent = state.privacyGlassFrosted ? 'Privacy Frosted (Active)' : 'Ultra-Clear Optical';
+      document.getElementById('lbl-glass-metric').textContent = state.privacyGlassFrosted ? '0.85 OPACITY' : '92% TRANSMISSIVE';
+    };
+    document.getElementById('input-louver').oninput = e => {
+      state.louverAngle = parseInt(e.target.value);
+      document.getElementById('val-louver').textContent = `${state.louverAngle}°`;
+    };
+
+    document.getElementById('input-temp').oninput = e => {
+      state.temperatureFahrenheit = parseInt(e.target.value);
+      document.getElementById('val-temp').textContent = `${state.temperatureFahrenheit}°`;
+      document.getElementById('nav-temp-label').textContent = `• ${state.temperatureFahrenheit}°F`;
+    };
+    document.getElementById('btn-airflow').onclick = e => {
+      state.airflowActive = !state.airflowActive;
+      e.target.textContent = state.airflowActive ? 'ACTIVE' : 'IDLE';
+    };
+    document.getElementById('input-fire').oninput = e => {
+      state.firepitIntensity = parseFloat(e.target.value);
+      document.getElementById('val-fire').textContent = `${Math.round(state.firepitIntensity * 100)}%`;
+    };
+
+    document.querySelectorAll('.sec-mode-btn').forEach(b => b.onclick = () => {
+      state.securityStatus = b.dataset.sec;
+      audio.tone(state.securityStatus === 'armed' ? 660 : 440, state.securityStatus === 'armed' ? 990 : 330, 0.15);
+      document.querySelectorAll('.sec-mode-btn').forEach(x => {
+        const act = x.dataset.sec === state.securityStatus;
+        x.className = act
+          ? 'sec-mode-btn px-2.5 py-2 rounded-md border border-[#44ffaa] text-[#44ffaa] bg-white/5 font-semibold text-xs font-tech cursor-pointer'
+          : 'sec-mode-btn px-2.5 py-2 rounded-md border border-white/10 text-[#777] text-xs font-tech cursor-pointer';
+      });
+    });
+    document.getElementById('btn-lidar').onclick = () => {
+      state.lidarScannerActive = !state.lidarScannerActive;
+      document.getElementById('lbl-lidar').textContent = state.lidarScannerActive ? 'ACTIVE' : 'MUTED';
+    };
+    document.getElementById('btn-gate').onclick = () => {
+      state.biometricGateLocked = !state.biometricGateLocked;
+      document.getElementById('lbl-gate').textContent = state.biometricGateLocked ? 'ENCRYPTED' : 'UNLOCKED';
+    };
+
+    document.getElementById('input-solar').oninput = e => updateDayNight(parseFloat(e.target.value));
+    document.querySelectorAll('.hour-preset').forEach(b => b.onclick = () => {
+      const h = parseFloat(b.dataset.hour);
+      document.getElementById('input-solar').value = h;
+      updateDayNight(h);
+    });
+
+    document.querySelectorAll('.finish-card').forEach(c => c.onclick = () => {
+      const f = c.dataset.finish;
+      state.finish = f;
+      if (f === 'champagne-brass') { accentMetalMat.color.setHex(0xd4af37); accentMetalMat.roughness = 0.22; accentMetalMat.metalness = 0.88; }
+      if (f === 'obsidian-titanium') { accentMetalMat.color.setHex(0x1a1a22); accentMetalMat.roughness = 0.18; accentMetalMat.metalness = 0.95; }
+      if (f === 'carrara-marble') { accentMetalMat.color.setHex(0xe8e6e1); accentMetalMat.roughness = 0.28; accentMetalMat.metalness = 0.3; }
+      if (f === 'smoked-oak') { accentMetalMat.color.setHex(0x4a3726); accentMetalMat.roughness = 0.6; accentMetalMat.metalness = 0.1; }
+      document.querySelectorAll('.finish-card').forEach(x => {
+        const act = x.dataset.finish === f;
+        x.className = act
+          ? 'finish-card p-6 rounded-xl border border-[#c5a059] bg-[#161622] shadow-[0_0_25px_rgba(197,160,89,0.25)] transition-all duration-300 cursor-pointer flex flex-col justify-between'
+          : 'finish-card p-6 rounded-xl border border-white/10 bg-[#0c0c12] hover:border-white/30 transition-all duration-300 cursor-pointer flex flex-col justify-between';
+        x.querySelector('.finish-status').textContent = act ? 'ACTIVE IN 3D SCENE' : 'CLICK TO APPLY';
+        x.querySelector('.finish-status').className = act ? 'finish-status text-[#c5a059] font-bold' : 'finish-status text-[#666]';
+      });
+    });
+
+    const vipModal = document.getElementById('vip-modal');
+    const openVip = () => { vipModal.classList.remove('hidden'); vipModal.classList.add('flex'); };
+    const closeVip = () => { vipModal.classList.add('hidden'); vipModal.classList.remove('flex'); };
+    document.getElementById('btn-open-vip').onclick = openVip;
+    document.getElementById('btn-open-vip-bottom').onclick = openVip;
+    document.getElementById('btn-close-vip').onclick = closeVip;
+    document.getElementById('vip-backdrop').onclick = closeVip;
+    document.getElementById('btn-vip-done').onclick = () => {
+      closeVip();
+      document.getElementById('vip-form').classList.remove('hidden');
+      document.getElementById('vip-success').classList.add('hidden');
+    };
+    document.getElementById('vip-form').onsubmit = e => {
+      e.preventDefault();
+      document.getElementById('vip-form').classList.add('hidden');
+      document.getElementById('vip-success').classList.remove('hidden');
+    };
+
+    const clock = new THREE.Clock();
+    const tempVec = new THREE.Vector3();
+    function animate() {
+      const delta = Math.min(clock.getDelta(), 0.1);
+      const elapsed = clock.getElapsedTime();
+
+      orbit.theta = THREE.MathUtils.damp(orbit.theta, targetOrbit.theta, 5, delta);
+      orbit.phi = THREE.MathUtils.damp(orbit.phi, targetOrbit.phi, 5, delta);
+      orbit.radius = THREE.MathUtils.damp(orbit.radius, targetOrbit.radius, 5, delta);
+
+      const tPos = new THREE.Vector3().setFromSpherical(orbit).add(targetLookAt);
+      currentCamPos.x = THREE.MathUtils.damp(currentCamPos.x, tPos.x + parallaxX, 4, delta);
+      currentCamPos.y = THREE.MathUtils.damp(currentCamPos.y, tPos.y + parallaxY, 4, delta);
+      currentCamPos.z = THREE.MathUtils.damp(currentCamPos.z, tPos.z, 4, delta);
+      currentLookAt.lerp(targetLookAt, 1 - Math.exp(-4 * delta));
+      camera.position.copy(currentCamPos);
+      camera.lookAt(currentLookAt);
+
+      waterNormalTex.offset.x += delta * 0.02;
+      waterNormalTex.offset.y += delta * 0.015;
+
+      leftCurtain.position.x = THREE.MathUtils.damp(leftCurtain.position.x, THREE.MathUtils.lerp(-4.2, -7.0, state.curtainOpenRatio), 3.5, delta);
+      rightCurtain.position.x = THREE.MathUtils.damp(rightCurtain.position.x, THREE.MathUtils.lerp(4.2, 7.0, state.curtainOpenRatio), 3.5, delta);
+
+      const radLouver = (state.louverAngle * Math.PI) / 180;
+      louvers.forEach(l => l.rotation.y = THREE.MathUtils.damp(l.rotation.y, radLouver, 4.0, delta));
+
+      glassMat.roughness = THREE.MathUtils.damp(glassMat.roughness, state.privacyGlassFrosted ? 0.8 : 0.04, 4.0, delta);
+      glassMat.transmission = THREE.MathUtils.damp(glassMat.transmission, state.privacyGlassFrosted ? 0.25 : 0.92, 4.0, delta);
+
+      let lHex = 0xff9944;
+      if (state.lightingPreset === 'daylight') lHex = 0xfcf5e8;
+      else if (state.lightingPreset === 'nocturne') lHex = 0x44aaff;
+      else if (state.lightingPreset === 'candlelight') lHex = 0xffaa44;
+      const flicker = state.lightingPreset === 'candlelight' ? Math.sin(elapsed * 12) * 0.08 : 0;
+      const dim = Math.max(0, state.interiorDimmer + flicker);
+      [interiorPoint, livingLight, pentLight].forEach((l, i) => {
+        l.color.setHex(lHex); l.intensity = dim * (i === 1 ? 4.0 : 3.0);
+      });
+      facadeSpots.forEach(s => s.intensity = state.facadeUplights ? 4.5 : 0);
+      poolLight.intensity = state.poolLights ? 3.5 : 0;
+
+      fireLight.intensity = state.firepitIntensity * (2.4 + Math.sin(elapsed * 14) * 0.4);
+      fireMat.opacity = state.firepitIntensity * 0.85;
+      if (state.firepitIntensity > 0) {
+        const fp = fireGeo.attributes.position.array;
+        for (let i = 0; i < fireCount; i++) {
+          fp[i * 3 + 1] += delta * 0.6;
+          if (fp[i * 3 + 1] > 1.9) { fp[i * 3 + 1] = 1.1; fp[i * 3] = -6.5 + (Math.random() - 0.5) * 1.6; }
+        }
+        fireGeo.attributes.position.needsUpdate = true;
+      }
+
+      lidarMesh.visible = state.lidarScannerActive;
+      if (state.lidarScannerActive) lidarMesh.rotation.z += delta * 0.5;
+      beaconMat.color.setHex(state.securityStatus === 'armed' ? 0x44ffaa : state.securityStatus === 'home' ? 0xdfbe76 : 0x666677);
+
+      airParticles.visible = state.airflowActive;
+      if (state.airflowActive) {
+        airMat.color.setHex(state.temperatureFahrenheit <= 71 ? 0x66ddff : 0xffcb85);
+        const ap = airGeo.attributes.position.array;
+        for (let i = 0; i < airCount; i++) {
+          ap[i * 3] += delta * 0.5;
+          if (ap[i * 3] > 6) ap[i * 3] = -6;
+        }
+        airGeo.attributes.position.needsUpdate = true;
+      }
+
+      renderer.render(scene, camera);
+
+      const w = mount.clientWidth, h = mount.clientHeight;
+      hotspotEls.forEach(({ hs, el }) => {
+        tempVec.copy(hs.pos).project(camera);
+        const x = (tempVec.x * 0.5 + 0.5) * w, y = (-tempVec.y * 0.5 + 0.5) * h;
+        const vis = tempVec.z < 1 && x >= 0 && x <= w && y >= 0 && y <= h;
+        el.style.display = vis ? 'flex' : 'none';
+        el.style.left = `${x}px`; el.style.top = `${y}px`;
+      });
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+</html>
